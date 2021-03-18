@@ -22,5 +22,6 @@ export default gql`
     users: [User]
     user(id: Int): User
     posts: [Post]
+    post(id: Int): Post
   }
 `;

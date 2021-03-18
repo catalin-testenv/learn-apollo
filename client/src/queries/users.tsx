@@ -6,6 +6,10 @@ query GetUsers {
         firstName
         lastName
         name
+        posts {
+            id
+            title
+        }
     }
 }
 `;

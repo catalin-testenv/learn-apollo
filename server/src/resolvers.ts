@@ -20,6 +20,18 @@ function getUser(
     return db.users.get(id);
 }
 
+type PostArguments = {
+    id: number;
+};
+
+function getPost(
+    _: any,
+    { id }: PostArguments,
+    context: any,
+): Post | undefined {
+    return db.posts.get(id);
+}
+
 function computeName(user: User): string {
     console.log(`Computing name for`, user);
     return `${user.firstName} ${user.lastName}`;
@@ -47,6 +59,7 @@ const resolvers = {
         users: getUsers,
         user: getUser,
         posts: getPosts,
+        post: getPost
     },
 };
 

@@ -1,34 +1,47 @@
 import "./App.css";
 import React, { useState } from "react";
-import { useGetUsersQuery, useGetUserQuery } from './graphql';
+import Users from "./components/Users";
+import User from "./components/User";
+import Posts from "./components/Posts";
+import Post from "./components/Post";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
 
-
-export default () => {
-    const { data, loading, error } = useGetUsersQuery({
-        variables: {},
-    });
-    console.log({ data, error });
-    const toRender = <ul>
-        {data?.users?.map((user,id) => <li key={id}>{user?.name}</li>)}
-    </ul>;
-
-    // const { data, loading, error } = useGetUserQuery({
-    //     variables: { id: 1 },
-    // });
-    // console.log({ data, error });
-    // const toRender = <div>
-    //     {data?.user?.name}
-    //     <ul>
-    //         {data?.user?.posts?.map((post, id) => <li key={id}>{post?.title}</li>)}
-    //     </ul>
-    // </div>;
-
+const App = () => {
     return (
-        loading ? <span>loading</span> : error ? <span>error</span> :
-            <div>
-                <ul>
-                    {toRender}
-                </ul>
-            </div>
+        <Router>
+            <Switch>
+                <Route exact path="/">
+                    <Link to="/users">Users</Link> <br />
+                    <Link to="/posts">Posts</Link> <br />
+                </Route>
+                <Route path="/users/:id">
+                    <User />
+                </Route>
+                <Route path="/users">
+                    <Users />
+                </Route>
+                <Route path="/posts/:id">
+                    <Post />
+                </Route>
+                <Route path="/posts">
+                    <Posts />
+                </Route>
+                <Route path="*">
+                    404 <br />
+                    <Link to="/">home</Link>
+                </Route>
+            </Switch>
+            <br />
+            <br />
+            <br />
+            <br />
+            <Link to="/">home</Link>
+        </Router>
     );
 };
+export default App;
