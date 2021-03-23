@@ -8,6 +8,11 @@ export default gql`
     author: User
     comments: [Comment]
   }
+  
+  type Posts {
+    totalCount: Int
+    nodes: [Post]
+  }
 
   type User {
     id: ID!
@@ -16,8 +21,13 @@ export default gql`
     name: String! # This is the computed full name of a user
     age: Float
     email: String
-    posts: [Post]
+    posts: Posts
     comments: [Comment]
+  }
+  
+  type Users {
+    totalCount: Int
+    nodes: [User]
   }
   
   type Comment {
@@ -28,9 +38,9 @@ export default gql`
   }
 
   type Query {
-    users: [User]
+    users: Users
     user(id: Int): User
-    posts: [Post]
+    posts: Posts
     post(id: Int): Post
     comments: [Comment]
     comment(id: Int): Comment

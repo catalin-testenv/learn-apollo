@@ -2,18 +2,25 @@ import { gql } from "@apollo/client";
 export default gql`
 query GetUsers {
     users {
-        id
-        firstName
-        lastName
-        name
-        posts {
+        totalCount
+        nodes {
             id
-            title
+            firstName
+            lastName
+            name
+            posts {
+                totalCount
+                nodes {
+                    id
+                    title
+                }
+            }
+            comments {
+                id
+                body
+            }
         }
-        comments {
-            id
-            body
-        }
+        
     }
 }
 `;

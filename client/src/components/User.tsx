@@ -19,10 +19,10 @@ const User = () => {
 
     const toRender = <div>
         <p>User: <b>{data?.user?.name}</b></p>
-        {data?.user?.posts && <div>
-            <p>Posts: </p>
+        {data?.user?.posts?.nodes && <div>
+            <p>Posts ({ data?.user?.posts.totalCount }): </p>
             <ul>
-                {data.user.posts.map((post) =>
+                {data.user.posts.nodes.map((post) =>
                     <li key={post?.id}><Link to={`/posts/${post?.id}`}>{post?.title}</Link></li>
                 )}
             </ul>

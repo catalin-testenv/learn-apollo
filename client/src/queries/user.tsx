@@ -7,9 +7,12 @@ query GetUser($id: Int) {
     lastName
     name
     posts {
-        id
-        title
-        body
+        totalCount
+        nodes {
+            id
+            title
+            body
+        }
     }
     comments {
         id

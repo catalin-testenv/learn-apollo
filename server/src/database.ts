@@ -7,11 +7,21 @@ export type User = {
     email?: string | null
 }
 
+export type Users = {
+    totalCount: number,
+    nodes: User[]
+}
+
 export type Post = {
     id: number,
     authorId: number,
     title: string,
     body: string,
+}
+
+export type Posts = {
+    totalCount: number,
+    nodes: Post[]
 }
 
 export type Comment = {

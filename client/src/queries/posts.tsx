@@ -2,18 +2,21 @@ import { gql } from "@apollo/client";
 export default gql`
 query GetPosts {
     posts {
-        id
-        title
-        author {
+        totalCount
+        nodes {
             id
-            name
-        }
-        comments {
-            id
-            body
+            title
             author {
                 id
                 name
+            }
+            comments {
+                id
+                body
+                author {
+                    id
+                    name
+                }
             }
         }
     }

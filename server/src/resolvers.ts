@@ -1,4 +1,4 @@
-import { User, Post, Comment } from './database';
+import { User, Users, Post, Posts, Comment } from './database';
 type Context = {
     knex: any;
 };
@@ -26,20 +26,27 @@ async function getPosts(
     _: any,
     {}: any,
     { knex }: Context
-): Promise<Array<Post>> {
-    return await knex('posts')
+): Promise<Posts> {
+    const posts =  await knex('posts')
         .select(...selectPost);
+    return {
+        totalCount: posts.length,
+        nodes: posts
+    }
 }
 
 async function getPostsByUser(
     { id }: User,
     {}: any,
     { knex }: Context
-): Promise<Array<Post>> {
+): Promise<Posts> {
     const posts = await knex('posts')
         .where('authorId', id)
         .select(...selectPost);
-    return posts;
+    return {
+        totalCount: posts.length,
+        nodes: posts
+    }
 }
 
 async function getPostByComment(
@@ -73,10 +80,13 @@ async function getUsers(
     _: any,
     {}: any,
     { knex }: Context
-): Promise<Array<User>> {
+): Promise<Users> {
     const users = await knex('users')
         .select(...selectUser);
-    return users;
+    return {
+        totalCount: users.length,
+        nodes: users
+    };
 }
 
 function computeName(user: User, args:any, context:any, info:any): string {

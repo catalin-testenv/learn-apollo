@@ -25,6 +25,12 @@ export type Post = {
   comments?: Maybe<Array<Maybe<Comment>>>;
 };
 
+export type Posts = {
+  __typename?: 'Posts';
+  totalCount?: Maybe<Scalars['Int']>;
+  nodes?: Maybe<Array<Maybe<Post>>>;
+};
+
 export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
@@ -33,8 +39,14 @@ export type User = {
   name: Scalars['String'];
   age?: Maybe<Scalars['Float']>;
   email?: Maybe<Scalars['String']>;
-  posts?: Maybe<Array<Maybe<Post>>>;
+  posts?: Maybe<Posts>;
   comments?: Maybe<Array<Maybe<Comment>>>;
+};
+
+export type Users = {
+  __typename?: 'Users';
+  totalCount?: Maybe<Scalars['Int']>;
+  nodes?: Maybe<Array<Maybe<User>>>;
 };
 
 export type Comment = {
@@ -47,9 +59,9 @@ export type Comment = {
 
 export type Query = {
   __typename?: 'Query';
-  users?: Maybe<Array<Maybe<User>>>;
+  users?: Maybe<Users>;
   user?: Maybe<User>;
-  posts?: Maybe<Array<Maybe<Post>>>;
+  posts?: Maybe<Posts>;
   post?: Maybe<Post>;
   comments?: Maybe<Array<Maybe<Comment>>>;
   comment?: Maybe<Comment>;
@@ -143,21 +155,25 @@ export type GetPostsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetPostsQuery = (
   { __typename?: 'Query' }
-  & { posts?: Maybe<Array<Maybe<(
-    { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title'>
-    & { author?: Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'name'>
-    )>, comments?: Maybe<Array<Maybe<(
-      { __typename?: 'Comment' }
-      & Pick<Comment, 'id' | 'body'>
+  & { posts?: Maybe<(
+    { __typename?: 'Posts' }
+    & Pick<Posts, 'totalCount'>
+    & { nodes?: Maybe<Array<Maybe<(
+      { __typename?: 'Post' }
+      & Pick<Post, 'id' | 'title'>
       & { author?: Maybe<(
         { __typename?: 'User' }
         & Pick<User, 'id' | 'name'>
-      )> }
+      )>, comments?: Maybe<Array<Maybe<(
+        { __typename?: 'Comment' }
+        & Pick<Comment, 'id' | 'body'>
+        & { author?: Maybe<(
+          { __typename?: 'User' }
+          & Pick<User, 'id' | 'name'>
+        )> }
+      )>>> }
     )>>> }
-  )>>> }
+  )> }
 );
 
 export type GetUserQueryVariables = Exact<{
@@ -170,10 +186,14 @@ export type GetUserQuery = (
   & { user?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'id' | 'firstName' | 'lastName' | 'name'>
-    & { posts?: Maybe<Array<Maybe<(
-      { __typename?: 'Post' }
-      & Pick<Post, 'id' | 'title' | 'body'>
-    )>>>, comments?: Maybe<Array<Maybe<(
+    & { posts?: Maybe<(
+      { __typename?: 'Posts' }
+      & Pick<Posts, 'totalCount'>
+      & { nodes?: Maybe<Array<Maybe<(
+        { __typename?: 'Post' }
+        & Pick<Post, 'id' | 'title' | 'body'>
+      )>>> }
+    )>, comments?: Maybe<Array<Maybe<(
       { __typename?: 'Comment' }
       & Pick<Comment, 'id' | 'body'>
       & { post?: Maybe<(
@@ -189,17 +209,25 @@ export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetUsersQuery = (
   { __typename?: 'Query' }
-  & { users?: Maybe<Array<Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'firstName' | 'lastName' | 'name'>
-    & { posts?: Maybe<Array<Maybe<(
-      { __typename?: 'Post' }
-      & Pick<Post, 'id' | 'title'>
-    )>>>, comments?: Maybe<Array<Maybe<(
-      { __typename?: 'Comment' }
-      & Pick<Comment, 'id' | 'body'>
+  & { users?: Maybe<(
+    { __typename?: 'Users' }
+    & Pick<Users, 'totalCount'>
+    & { nodes?: Maybe<Array<Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'firstName' | 'lastName' | 'name'>
+      & { posts?: Maybe<(
+        { __typename?: 'Posts' }
+        & Pick<Posts, 'totalCount'>
+        & { nodes?: Maybe<Array<Maybe<(
+          { __typename?: 'Post' }
+          & Pick<Post, 'id' | 'title'>
+        )>>> }
+      )>, comments?: Maybe<Array<Maybe<(
+        { __typename?: 'Comment' }
+        & Pick<Comment, 'id' | 'body'>
+      )>>> }
     )>>> }
-  )>>> }
+  )> }
 );
 
 
@@ -336,18 +364,21 @@ export type GetPostQueryResult = Apollo.QueryResult<GetPostQuery, GetPostQueryVa
 export const GetPostsDocument = gql`
     query GetPosts {
   posts {
-    id
-    title
-    author {
+    totalCount
+    nodes {
       id
-      name
-    }
-    comments {
-      id
-      body
+      title
       author {
         id
         name
+      }
+      comments {
+        id
+        body
+        author {
+          id
+          name
+        }
       }
     }
   }
@@ -386,9 +417,12 @@ export const GetUserDocument = gql`
     lastName
     name
     posts {
-      id
-      title
-      body
+      totalCount
+      nodes {
+        id
+        title
+        body
+      }
     }
     comments {
       id
@@ -430,17 +464,23 @@ export type GetUserQueryResult = Apollo.QueryResult<GetUserQuery, GetUserQueryVa
 export const GetUsersDocument = gql`
     query GetUsers {
   users {
-    id
-    firstName
-    lastName
-    name
-    posts {
+    totalCount
+    nodes {
       id
-      title
-    }
-    comments {
-      id
-      body
+      firstName
+      lastName
+      name
+      posts {
+        totalCount
+        nodes {
+          id
+          title
+        }
+      }
+      comments {
+        id
+        body
+      }
     }
   }
 }

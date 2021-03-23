@@ -14,13 +14,13 @@ const Users = () => {
         variables: {},
     });
 
-    const toRender = <div>Users: <ul>
-        {data?.users?.map(
+    const toRender = <div>Users ({data?.users?.totalCount}): <ul>
+        {data?.users?.nodes?.map(
             (user) =>
                 <li key={user?.id}>
                     <Link to={`/users/${user?.id}`}>{user?.name}</Link>
-                    {user?.posts && <ul>
-                        {user.posts.map((post) => <li>
+                    {user?.posts?.nodes && <ul>
+                        {user.posts.nodes.map((post) => <li>
                             {post?.title}
                         </li>)}
                     </ul>}

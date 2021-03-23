@@ -14,8 +14,8 @@ const Posts = () => {
         variables: {},
     });
 
-    const toRender = <div>Posts: <ul>
-        {data?.posts?.map(
+    const toRender = <div>Posts ({ data?.posts?.totalCount }): <ul>
+        {data?.posts?.nodes?.map(
             (post) =>
                 <li key={post?.id}>
                     <Link to={`/posts/${post?.id}`}>{post?.title}</Link>
