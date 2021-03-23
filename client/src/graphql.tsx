@@ -22,6 +22,7 @@ export type Post = {
   title: Scalars['String'];
   body: Scalars['String'];
   author?: Maybe<User>;
+  comments?: Maybe<Array<Maybe<Comment>>>;
 };
 
 export type User = {
@@ -33,6 +34,15 @@ export type User = {
   age?: Maybe<Scalars['Float']>;
   email?: Maybe<Scalars['String']>;
   posts?: Maybe<Array<Maybe<Post>>>;
+  comments?: Maybe<Array<Maybe<Comment>>>;
+};
+
+export type Comment = {
+  __typename?: 'Comment';
+  id: Scalars['ID'];
+  body: Scalars['String'];
+  author?: Maybe<User>;
+  post?: Maybe<Post>;
 };
 
 export type Query = {
@@ -41,6 +51,8 @@ export type Query = {
   user?: Maybe<User>;
   posts?: Maybe<Array<Maybe<Post>>>;
   post?: Maybe<Post>;
+  comments?: Maybe<Array<Maybe<Comment>>>;
+  comment?: Maybe<Comment>;
 };
 
 
@@ -53,11 +65,54 @@ export type QueryPostArgs = {
   id?: Maybe<Scalars['Int']>;
 };
 
+
+export type QueryCommentArgs = {
+  id?: Maybe<Scalars['Int']>;
+};
+
 export enum CacheControlScope {
   Public = 'PUBLIC',
   Private = 'PRIVATE'
 }
 
+
+export type GetCommentQueryVariables = Exact<{
+  id?: Maybe<Scalars['Int']>;
+}>;
+
+
+export type GetCommentQuery = (
+  { __typename?: 'Query' }
+  & { comment?: Maybe<(
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id' | 'body'>
+    & { author?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'name'>
+    )>, post?: Maybe<(
+      { __typename?: 'Post' }
+      & Pick<Post, 'id' | 'title'>
+    )> }
+  )> }
+);
+
+export type GetCommentsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCommentsQuery = (
+  { __typename?: 'Query' }
+  & { comments?: Maybe<Array<Maybe<(
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id' | 'body'>
+    & { author?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'name'>
+    )>, post?: Maybe<(
+      { __typename?: 'Post' }
+      & Pick<Post, 'id' | 'title'>
+    )> }
+  )>>> }
+);
 
 export type GetPostQueryVariables = Exact<{
   id?: Maybe<Scalars['Int']>;
@@ -72,7 +127,14 @@ export type GetPostQuery = (
     & { author?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'name'>
-    )> }
+    )>, comments?: Maybe<Array<Maybe<(
+      { __typename?: 'Comment' }
+      & Pick<Comment, 'id' | 'body'>
+      & { author?: Maybe<(
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'name'>
+      )> }
+    )>>> }
   )> }
 );
 
@@ -87,7 +149,14 @@ export type GetPostsQuery = (
     & { author?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'name'>
-    )> }
+    )>, comments?: Maybe<Array<Maybe<(
+      { __typename?: 'Comment' }
+      & Pick<Comment, 'id' | 'body'>
+      & { author?: Maybe<(
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'name'>
+      )> }
+    )>>> }
   )>>> }
 );
 
@@ -104,6 +173,13 @@ export type GetUserQuery = (
     & { posts?: Maybe<Array<Maybe<(
       { __typename?: 'Post' }
       & Pick<Post, 'id' | 'title' | 'body'>
+    )>>>, comments?: Maybe<Array<Maybe<(
+      { __typename?: 'Comment' }
+      & Pick<Comment, 'id' | 'body'>
+      & { post?: Maybe<(
+        { __typename?: 'Post' }
+        & Pick<Post, 'id' | 'title'>
+      )> }
     )>>> }
   )> }
 );
@@ -119,11 +195,97 @@ export type GetUsersQuery = (
     & { posts?: Maybe<Array<Maybe<(
       { __typename?: 'Post' }
       & Pick<Post, 'id' | 'title'>
+    )>>>, comments?: Maybe<Array<Maybe<(
+      { __typename?: 'Comment' }
+      & Pick<Comment, 'id' | 'body'>
     )>>> }
   )>>> }
 );
 
 
+export const GetCommentDocument = gql`
+    query GetComment($id: Int) {
+  comment(id: $id) {
+    id
+    body
+    author {
+      id
+      name
+    }
+    post {
+      id
+      title
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetCommentQuery__
+ *
+ * To run a query within a React component, call `useGetCommentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCommentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCommentQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetCommentQuery(baseOptions?: Apollo.QueryHookOptions<GetCommentQuery, GetCommentQueryVariables>) {
+        return Apollo.useQuery<GetCommentQuery, GetCommentQueryVariables>(GetCommentDocument, baseOptions);
+      }
+export function useGetCommentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCommentQuery, GetCommentQueryVariables>) {
+          return Apollo.useLazyQuery<GetCommentQuery, GetCommentQueryVariables>(GetCommentDocument, baseOptions);
+        }
+export type GetCommentQueryHookResult = ReturnType<typeof useGetCommentQuery>;
+export type GetCommentLazyQueryHookResult = ReturnType<typeof useGetCommentLazyQuery>;
+export type GetCommentQueryResult = Apollo.QueryResult<GetCommentQuery, GetCommentQueryVariables>;
+export const GetCommentsDocument = gql`
+    query GetComments {
+  comments {
+    id
+    body
+    author {
+      id
+      name
+    }
+    post {
+      id
+      title
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetCommentsQuery__
+ *
+ * To run a query within a React component, call `useGetCommentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCommentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCommentsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCommentsQuery(baseOptions?: Apollo.QueryHookOptions<GetCommentsQuery, GetCommentsQueryVariables>) {
+        return Apollo.useQuery<GetCommentsQuery, GetCommentsQueryVariables>(GetCommentsDocument, baseOptions);
+      }
+export function useGetCommentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCommentsQuery, GetCommentsQueryVariables>) {
+          return Apollo.useLazyQuery<GetCommentsQuery, GetCommentsQueryVariables>(GetCommentsDocument, baseOptions);
+        }
+export type GetCommentsQueryHookResult = ReturnType<typeof useGetCommentsQuery>;
+export type GetCommentsLazyQueryHookResult = ReturnType<typeof useGetCommentsLazyQuery>;
+export type GetCommentsQueryResult = Apollo.QueryResult<GetCommentsQuery, GetCommentsQueryVariables>;
 export const GetPostDocument = gql`
     query GetPost($id: Int) {
   post(id: $id) {
@@ -133,6 +295,14 @@ export const GetPostDocument = gql`
     author {
       id
       name
+    }
+    comments {
+      id
+      body
+      author {
+        id
+        name
+      }
     }
   }
 }
@@ -171,6 +341,14 @@ export const GetPostsDocument = gql`
     author {
       id
       name
+    }
+    comments {
+      id
+      body
+      author {
+        id
+        name
+      }
     }
   }
 }
@@ -212,6 +390,14 @@ export const GetUserDocument = gql`
       title
       body
     }
+    comments {
+      id
+      body
+      post {
+        id
+        title
+      }
+    }
   }
 }
     `;
@@ -251,6 +437,10 @@ export const GetUsersDocument = gql`
     posts {
       id
       title
+    }
+    comments {
+      id
+      body
     }
   }
 }

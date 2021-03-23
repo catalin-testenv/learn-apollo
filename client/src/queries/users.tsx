@@ -10,6 +10,10 @@ query GetUsers {
             id
             title
         }
+        comments {
+            id
+            body
+        }
     }
 }
 `;

@@ -1,65 +1,181 @@
-import db, { User, Post } from './database';
-
-function getPosts(): Array<Post> {
-    return Array.from(db.posts.values());
-}
-
-function getUsers(): Array<User> {
-    return Array.from(db.users.values());
-}
-
-type UserArguments = {
-    id: number;
+import { User, Post, Comment } from './database';
+type Context = {
+    knex: any;
 };
 
-function getUser(
-    _: any,
-    { id }: UserArguments,
-    context: any,
-): User | undefined {
-    return db.users.get(id);
-}
+// ==================== POST =================================
 
 type PostArguments = {
     id: number;
 };
 
-function getPost(
+const selectPost = ['id', 'authorId', 'title', 'body'];
+
+async function getPost(
     _: any,
     { id }: PostArguments,
-    context: any,
-): Post | undefined {
-    return db.posts.get(id);
+    { knex }: Context
+): Promise<Post | undefined> {
+    const posts = await knex('posts')
+        .where('id', id)
+        .select(...selectPost);
+    return posts[0];
 }
 
-function computeName(user: User): string {
-    console.log(`Computing name for`, user);
+async function getPosts(
+    _: any,
+    {}: any,
+    { knex }: Context
+): Promise<Array<Post>> {
+    return await knex('posts')
+        .select(...selectPost);
+}
+
+async function getPostsByUser(
+    { id }: User,
+    {}: any,
+    { knex }: Context
+): Promise<Array<Post>> {
+    const posts = await knex('posts')
+        .where('authorId', id)
+        .select(...selectPost);
+    return posts;
+}
+
+async function getPostByComment(
+    { postId }: Comment,
+    {}: any,
+    { knex }: Context
+): Promise<Post | undefined> {
+    return getPost(null, { id: postId }, { knex });
+}
+
+// ==================== USER =================================
+
+type UserArguments = {
+    id: number;
+};
+
+const selectUser = ['id', 'firstName', 'lastName', 'age', 'email'];
+
+async function getUser(
+    _: any,
+    { id }: UserArguments,
+    { knex }: Context
+): Promise<User | undefined> {
+    const users = await knex('users')
+        .where('id', id)
+        .select(...selectUser);
+    return users[0];
+}
+
+async function getUsers(
+    _: any,
+    {}: any,
+    { knex }: Context
+): Promise<Array<User>> {
+    const users = await knex('users')
+        .select(...selectUser);
+    return users;
+}
+
+function computeName(user: User, args:any, context:any, info:any): string {
     return `${user.firstName} ${user.lastName}`;
 }
 
-function getPostsByUser({ id }: User): Array<Post> {
-    const posts = Array.from(db.posts.values());
-
-    return posts.filter(({ authorId }) => authorId === id);
+async function getAuthorByPost(
+    { authorId }: Post,
+    {}: any,
+    { knex }: Context
+): Promise<User | undefined> {
+    return getUser(null, { id: authorId }, { knex });
 }
 
-function getAuthorForPost({ authorId }: Post): User | undefined {
-    return db.users.get(authorId);
+async function getAuthorByComment(
+    { authorId }: Comment,
+    {}: any,
+    { knex }: Context
+): Promise<User | undefined> {
+    return getUser(null, { id: authorId }, { knex });
 }
+
+// ==================== COMMENT =================================
+
+type CommentArguments = {
+    id: number;
+};
+
+const selectComment = ['id', 'body', 'authorId', 'postId'];
+
+async function getComment(
+    _: any,
+    { id }: CommentArguments,
+    { knex }: Context
+): Promise<Comment | undefined> {
+    const comments = await knex('comments')
+        .where('id', id)
+        .select(...selectComment);
+    return comments[0];
+}
+
+async function getComments(
+    _: any,
+    {}: any,
+    { knex }: Context
+): Promise<Array<Comment>> {
+    const comments = await knex('comments')
+        .select(...selectComment);
+    return comments;
+}
+
+async function getCommentsByUser(
+    { id }: User,
+    {}: any,
+    { knex }: Context
+): Promise<Array<Comment>> {
+    const comments = await knex('comments')
+        .where('authorId', id)
+        .select(...selectComment);
+    return comments;
+}
+
+async function getCommentsByPost(
+    { id }: Post,
+    {}: any,
+    { knex }: Context
+): Promise<Array<Comment>> {
+    const comments = await knex('comments')
+        .where('postId', id)
+        .select(...selectComment);
+    return comments;
+}
+
+// ==================== RESOLVERS =================================
 
 const resolvers = {
     User: {
         name: computeName,
         posts: getPostsByUser,
+        comments: getCommentsByUser,
     },
+
     Post: {
-        author: getAuthorForPost,
+        author: getAuthorByPost,
+        comments: getCommentsByPost,
     },
+
+    Comment: {
+        author: getAuthorByComment,
+        post: getPostByComment
+    },
+
     Query: {
         users: getUsers,
         user: getUser,
         posts: getPosts,
-        post: getPost
+        post: getPost,
+        comments: getComments,
+        comment: getComment
     },
 };
 

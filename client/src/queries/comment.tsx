@@ -1,21 +1,16 @@
 import { gql } from "@apollo/client";
 export default gql`
-query GetPost($id: Int) {
-    post(id: $id) {
+query GetComment($id: Int) {
+    comment(id: $id) {
         id
-        title
         body
         author {
             id
             name
         }
-        comments {
+        post {
             id
-            body
-            author {
-                id
-                name
-            }
+            title
         }
     }
 }

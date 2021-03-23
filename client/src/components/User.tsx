@@ -27,6 +27,14 @@ const User = () => {
                 )}
             </ul>
         </div>}
+        {data?.user?.comments && <div>
+            <p>Comments: </p>
+            <ul>
+                {data.user.comments.map((comment) =>
+                    <li key={comment?.id}><Link to={`/comments/${comment?.id}`}>{comment?.id} for {comment?.post?.title}</Link></li>
+                )}
+            </ul>
+        </div>}
 
     </div>;
 

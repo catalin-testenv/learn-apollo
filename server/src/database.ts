@@ -1,66 +1,86 @@
-export class User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  age: number;
-  email?: string | null;
 
-  constructor(
+export type User = {
     id: number,
     firstName: string,
     lastName: string,
     age: number,
-    email: string | null | undefined,
-  ) {
-    this.id = id;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.age = age;
-    this.email = email;
-  }
+    email?: string | null
 }
 
-export class Post {
-  id: number;
-  authorId: number;
-  title: string;
-  body: string;
-  published: boolean;
-  views: number | null | Error;
-
-  constructor(
+export type Post = {
     id: number,
     authorId: number,
     title: string,
     body: string,
-    published: boolean,
-    views: number | Error | null,
-  ) {
-    this.id = id;
-    this.authorId = authorId;
-    this.title = title;
-    this.body = body;
-    this.published = published;
-    this.views = views;
-  }
 }
 
-// Mock database tables
-const posts = new Map();
-const users = new Map();
+export type Comment = {
+    id: number,
+    authorId: number,
+    postId: number,
+    body: string,
+}
 
-// Seed initial posts
-posts.set(1, new Post(1, 1, 'First post', 'Lorem Ipsum...', true, 100));
-posts.set(2, new Post(2, 2, 'Second post', 'Lorem Ipsum...', false, 0));
+let knex: any = null;
 
-// Seed initial users
-users.set(1, new User(1, 'Alice', 'Foo', 38, null));
-users.set(2, new User(2, 'Bob', 'Bar', 27, null));
+async function startDatabase() {
+  if (!knex) {
+    knex = require('knex')({
+      client: 'sqlite3',
+      connection: {
+        filename: ':memory:',
+      },
+      useNullAsDefault: true,
+    });
 
-// Export the seeded tables
-const database = {
-  posts,
-  users,
-};
+    await createDatabase(knex);
 
-export default database;
+    console.log('database initialized');
+  }
+
+  return knex;
+}
+
+async function createDatabase(knex: any) {
+    await knex.schema
+    .createTable('users', (table: any) => {
+      table.increments('id');
+      table.string('firstName');
+      table.string('lastName');
+      table.float('age');
+      table.string('email');
+    })
+    .createTable('posts', (table: any) => {
+      table.increments('id');
+      table.string('title');
+      table.string('body');
+      table.integer('authorId').unsigned().references('users.id');
+    })
+    .createTable('comments', (table: any) => {
+      table.increments('id');
+      table.string('body');
+      table.integer('postId').unsigned().references('posts.id');
+      table.integer('authorId').unsigned().references('users.id');
+    });
+
+    await knex('users').insert([
+    { id: 1, firstName: 'Mister', lastName: 'Roro', age: 37.5, email: 'mister_roro@gmail.com' },
+    { id: 2, firstName: 'Styled', lastName: 'West', age: 38.5, email: 'styled_west@gmail.com' },
+    { id: 3, firstName: 'Daddy', lastName: 'Ice', age: 39, email: 'daddy_ice@gmail.com' },
+    ]);
+
+    await knex('posts').insert([
+    { id: 1, title: 'Awesome tunes', body: 'lorem ipsum 1',  authorId: 1 },
+    { id: 2, title: 'Starry Window', body: 'lorem ipsum 2', authorId: 2 },
+    { id: 3, title: 'Upbeat vocals', body: 'lorem ipsum 3', authorId: 2 },
+    { id: 4, title: 'Rotten', body: 'lorem ipsum 4', authorId: 3 },
+    ]);
+
+    await knex('comments').insert([
+        { id: 1, body: 'comment 1', authorId: 2, postId: 1 },
+        { id: 2, body: 'comment 2', authorId: 1, postId: 2 },
+    ]);
+    return true;
+}
+
+export default startDatabase;

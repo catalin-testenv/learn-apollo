@@ -4,6 +4,8 @@ import Users from "./components/Users";
 import User from "./components/User";
 import Posts from "./components/Posts";
 import Post from "./components/Post";
+import Comments from "./components/Comments";
+import Comment from "./components/Comment";
 import {
     BrowserRouter as Router,
     Switch,
@@ -18,6 +20,7 @@ const App = () => {
                 <Route exact path="/">
                     <Link to="/users">Users</Link> <br />
                     <Link to="/posts">Posts</Link> <br />
+                    <Link to="/comments">Comments</Link> <br />
                 </Route>
                 <Route path="/users/:id">
                     <User />
@@ -30,6 +33,12 @@ const App = () => {
                 </Route>
                 <Route path="/posts">
                     <Posts />
+                </Route>
+                <Route path="/comments/:id">
+                    <Comment />
+                </Route>
+                <Route path="/comments">
+                    <Comments />
                 </Route>
                 <Route path="*">
                     404 <br />

@@ -8,6 +8,14 @@ query GetPosts {
             id
             name
         }
+        comments {
+            id
+            body
+            author {
+                id
+                name
+            }
+        }
     }
 }
 `;
