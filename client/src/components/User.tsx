@@ -27,10 +27,10 @@ const User = () => {
                 )}
             </ul>
         </div>}
-        {data?.user?.comments && <div>
-            <p>Comments: </p>
+        {data?.user?.comments?.nodes && <div>
+            <p>Comments ({ data?.user?.comments?.totalCount }): </p>
             <ul>
-                {data.user.comments.map((comment) =>
+                {data.user.comments.nodes.map((comment) =>
                     <li key={comment?.id}><Link to={`/comments/${comment?.id}`}>{comment?.id} for {comment?.post?.title}</Link></li>
                 )}
             </ul>

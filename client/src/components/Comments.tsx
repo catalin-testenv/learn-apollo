@@ -14,8 +14,8 @@ const Comments = () => {
         variables: {},
     });
 
-    const toRender = <div>Comments: <ul>
-        {data?.comments?.map(
+    const toRender = <div>Comments ({ data?.comments?.totalCount }): <ul>
+        {data?.comments?.nodes?.map(
             (comment) =>
                 <li key={comment?.id}>
                     <Link to={`/comments/${comment?.id}`}>{comment?.id}</Link>

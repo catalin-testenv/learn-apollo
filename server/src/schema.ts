@@ -6,7 +6,7 @@ export default gql`
     title: String!
     body: String!
     author: User
-    comments: [Comment]
+    comments: Comments
   }
   
   type Posts {
@@ -22,7 +22,7 @@ export default gql`
     age: Float
     email: String
     posts: Posts
-    comments: [Comment]
+    comments: Comments
   }
   
   type Users {
@@ -36,13 +36,18 @@ export default gql`
     author: User
     post: Post
   }
+  
+  type Comments {
+    totalCount: Int
+    nodes: [Comment]
+  }
 
   type Query {
     users: Users
     user(id: Int): User
     posts: Posts
     post(id: Int): Post
-    comments: [Comment]
+    comments: Comments
     comment(id: Int): Comment
   }
 `;

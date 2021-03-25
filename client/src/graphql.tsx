@@ -22,7 +22,7 @@ export type Post = {
   title: Scalars['String'];
   body: Scalars['String'];
   author?: Maybe<User>;
-  comments?: Maybe<Array<Maybe<Comment>>>;
+  comments?: Maybe<Comments>;
 };
 
 export type Posts = {
@@ -40,7 +40,7 @@ export type User = {
   age?: Maybe<Scalars['Float']>;
   email?: Maybe<Scalars['String']>;
   posts?: Maybe<Posts>;
-  comments?: Maybe<Array<Maybe<Comment>>>;
+  comments?: Maybe<Comments>;
 };
 
 export type Users = {
@@ -57,13 +57,19 @@ export type Comment = {
   post?: Maybe<Post>;
 };
 
+export type Comments = {
+  __typename?: 'Comments';
+  totalCount?: Maybe<Scalars['Int']>;
+  nodes?: Maybe<Array<Maybe<Comment>>>;
+};
+
 export type Query = {
   __typename?: 'Query';
   users?: Maybe<Users>;
   user?: Maybe<User>;
   posts?: Maybe<Posts>;
   post?: Maybe<Post>;
-  comments?: Maybe<Array<Maybe<Comment>>>;
+  comments?: Maybe<Comments>;
   comment?: Maybe<Comment>;
 };
 
@@ -113,17 +119,21 @@ export type GetCommentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetCommentsQuery = (
   { __typename?: 'Query' }
-  & { comments?: Maybe<Array<Maybe<(
-    { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'body'>
-    & { author?: Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'name'>
-    )>, post?: Maybe<(
-      { __typename?: 'Post' }
-      & Pick<Post, 'id' | 'title'>
-    )> }
-  )>>> }
+  & { comments?: Maybe<(
+    { __typename?: 'Comments' }
+    & Pick<Comments, 'totalCount'>
+    & { nodes?: Maybe<Array<Maybe<(
+      { __typename?: 'Comment' }
+      & Pick<Comment, 'id' | 'body'>
+      & { author?: Maybe<(
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'name'>
+      )>, post?: Maybe<(
+        { __typename?: 'Post' }
+        & Pick<Post, 'id' | 'title'>
+      )> }
+    )>>> }
+  )> }
 );
 
 export type GetPostQueryVariables = Exact<{
@@ -139,14 +149,18 @@ export type GetPostQuery = (
     & { author?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'name'>
-    )>, comments?: Maybe<Array<Maybe<(
-      { __typename?: 'Comment' }
-      & Pick<Comment, 'id' | 'body'>
-      & { author?: Maybe<(
-        { __typename?: 'User' }
-        & Pick<User, 'id' | 'name'>
-      )> }
-    )>>> }
+    )>, comments?: Maybe<(
+      { __typename?: 'Comments' }
+      & Pick<Comments, 'totalCount'>
+      & { nodes?: Maybe<Array<Maybe<(
+        { __typename?: 'Comment' }
+        & Pick<Comment, 'id' | 'body'>
+        & { author?: Maybe<(
+          { __typename?: 'User' }
+          & Pick<User, 'id' | 'name'>
+        )> }
+      )>>> }
+    )> }
   )> }
 );
 
@@ -164,14 +178,18 @@ export type GetPostsQuery = (
       & { author?: Maybe<(
         { __typename?: 'User' }
         & Pick<User, 'id' | 'name'>
-      )>, comments?: Maybe<Array<Maybe<(
-        { __typename?: 'Comment' }
-        & Pick<Comment, 'id' | 'body'>
-        & { author?: Maybe<(
-          { __typename?: 'User' }
-          & Pick<User, 'id' | 'name'>
-        )> }
-      )>>> }
+      )>, comments?: Maybe<(
+        { __typename?: 'Comments' }
+        & Pick<Comments, 'totalCount'>
+        & { nodes?: Maybe<Array<Maybe<(
+          { __typename?: 'Comment' }
+          & Pick<Comment, 'id' | 'body'>
+          & { author?: Maybe<(
+            { __typename?: 'User' }
+            & Pick<User, 'id' | 'name'>
+          )> }
+        )>>> }
+      )> }
     )>>> }
   )> }
 );
@@ -193,14 +211,18 @@ export type GetUserQuery = (
         { __typename?: 'Post' }
         & Pick<Post, 'id' | 'title' | 'body'>
       )>>> }
-    )>, comments?: Maybe<Array<Maybe<(
-      { __typename?: 'Comment' }
-      & Pick<Comment, 'id' | 'body'>
-      & { post?: Maybe<(
-        { __typename?: 'Post' }
-        & Pick<Post, 'id' | 'title'>
-      )> }
-    )>>> }
+    )>, comments?: Maybe<(
+      { __typename?: 'Comments' }
+      & Pick<Comments, 'totalCount'>
+      & { nodes?: Maybe<Array<Maybe<(
+        { __typename?: 'Comment' }
+        & Pick<Comment, 'id' | 'body'>
+        & { post?: Maybe<(
+          { __typename?: 'Post' }
+          & Pick<Post, 'id' | 'title'>
+        )> }
+      )>>> }
+    )> }
   )> }
 );
 
@@ -222,10 +244,14 @@ export type GetUsersQuery = (
           { __typename?: 'Post' }
           & Pick<Post, 'id' | 'title'>
         )>>> }
-      )>, comments?: Maybe<Array<Maybe<(
-        { __typename?: 'Comment' }
-        & Pick<Comment, 'id' | 'body'>
-      )>>> }
+      )>, comments?: Maybe<(
+        { __typename?: 'Comments' }
+        & Pick<Comments, 'totalCount'>
+        & { nodes?: Maybe<Array<Maybe<(
+          { __typename?: 'Comment' }
+          & Pick<Comment, 'id' | 'body'>
+        )>>> }
+      )> }
     )>>> }
   )> }
 );
@@ -276,15 +302,18 @@ export type GetCommentQueryResult = Apollo.QueryResult<GetCommentQuery, GetComme
 export const GetCommentsDocument = gql`
     query GetComments {
   comments {
-    id
-    body
-    author {
+    totalCount
+    nodes {
       id
-      name
-    }
-    post {
-      id
-      title
+      body
+      author {
+        id
+        name
+      }
+      post {
+        id
+        title
+      }
     }
   }
 }
@@ -325,11 +354,14 @@ export const GetPostDocument = gql`
       name
     }
     comments {
-      id
-      body
-      author {
+      totalCount
+      nodes {
         id
-        name
+        body
+        author {
+          id
+          name
+        }
       }
     }
   }
@@ -373,11 +405,14 @@ export const GetPostsDocument = gql`
         name
       }
       comments {
-        id
-        body
-        author {
+        totalCount
+        nodes {
           id
-          name
+          body
+          author {
+            id
+            name
+          }
         }
       }
     }
@@ -425,11 +460,14 @@ export const GetUserDocument = gql`
       }
     }
     comments {
-      id
-      body
-      post {
+      totalCount
+      nodes {
         id
-        title
+        body
+        post {
+          id
+          title
+        }
       }
     }
   }
@@ -478,8 +516,11 @@ export const GetUsersDocument = gql`
         }
       }
       comments {
-        id
-        body
+        totalCount
+        nodes {
+          id
+          body
+        }
       }
     }
   }

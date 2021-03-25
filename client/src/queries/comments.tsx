@@ -2,15 +2,18 @@ import { gql } from "@apollo/client";
 export default gql`
 query GetComments {
     comments {
-        id
-        body
-        author {
+        totalCount
+        nodes {
             id
-            name
-        }
-        post {
-            id
-            title
+            body
+            author {
+                id
+                name
+            }
+            post {
+                id
+                title
+            }
         }
     }
 }

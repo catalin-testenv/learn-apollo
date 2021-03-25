@@ -15,11 +15,14 @@ query GetUser($id: Int) {
         }
     }
     comments {
-        id
-        body
-        post {
+        totalCount
+        nodes {
             id
-            title
+            body
+            post {
+                id
+                title
+            }
         }
     }
   }

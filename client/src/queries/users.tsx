@@ -16,8 +16,11 @@ query GetUsers {
                 }
             }
             comments {
-                id
-                body
+                totalCount
+                nodes {
+                    id
+                    body
+                }
             }
         }
         

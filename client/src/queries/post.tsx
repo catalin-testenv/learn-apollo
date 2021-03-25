@@ -10,11 +10,14 @@ query GetPost($id: Int) {
             name
         }
         comments {
-            id
-            body
-            author {
+            totalCount
+            nodes {
                 id
-                name
+                body
+                author {
+                    id
+                    name
+                }
             }
         }
     }

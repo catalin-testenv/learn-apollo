@@ -1,4 +1,4 @@
-import { User, Users, Post, Posts, Comment } from './database';
+import { User, Users, Post, Posts, Comment, Comments } from './database';
 type Context = {
     knex: any;
 };
@@ -132,32 +132,41 @@ async function getComments(
     _: any,
     {}: any,
     { knex }: Context
-): Promise<Array<Comment>> {
+): Promise<Comments> {
     const comments = await knex('comments')
         .select(...selectComment);
-    return comments;
+    return {
+        totalCount: comments.length,
+        nodes: comments
+    };
 }
 
 async function getCommentsByUser(
     { id }: User,
     {}: any,
     { knex }: Context
-): Promise<Array<Comment>> {
+): Promise<Comments> {
     const comments = await knex('comments')
         .where('authorId', id)
         .select(...selectComment);
-    return comments;
+    return {
+        totalCount: comments.length,
+        nodes: comments
+    };
 }
 
 async function getCommentsByPost(
     { id }: Post,
     {}: any,
     { knex }: Context
-): Promise<Array<Comment>> {
+): Promise<Comments> {
     const comments = await knex('comments')
         .where('postId', id)
         .select(...selectComment);
-    return comments;
+    return {
+        totalCount: comments.length,
+        nodes: comments
+    };
 }
 
 // ==================== RESOLVERS =================================

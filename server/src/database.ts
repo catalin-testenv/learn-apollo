@@ -31,6 +31,11 @@ export type Comment = {
     body: string,
 }
 
+export type Comments = {
+    totalCount: number,
+    nodes: Comment[]
+}
+
 let knex: any = null;
 
 async function startDatabase() {

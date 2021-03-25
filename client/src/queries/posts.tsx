@@ -11,11 +11,14 @@ query GetPosts {
                 name
             }
             comments {
-                id
-                body
-                author {
+                totalCount
+                nodes {
                     id
-                    name
+                    body
+                    author {
+                        id
+                        name
+                    }
                 }
             }
         }
