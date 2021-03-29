@@ -24,6 +24,13 @@ export default gql`
     posts: Posts
     comments: Comments
   }
+
+  input UserUpdateFieldsInput {
+    firstName: String
+    lastName: String
+    age: Float
+    email: String
+  }
   
   type Users {
     totalCount: Int
@@ -49,5 +56,9 @@ export default gql`
     post(id: Int): Post
     comments: Comments
     comment(id: Int): Comment
+  }
+  
+  type Mutation {
+    updateUser(id: Int, fields: UserUpdateFieldsInput): User
   }
 `;

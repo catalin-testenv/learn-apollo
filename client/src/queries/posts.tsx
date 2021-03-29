@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-export default gql`
+export const getPosts = gql`
 query GetPosts {
     posts {
         totalCount
@@ -19,6 +19,31 @@ query GetPosts {
                         id
                         name
                     }
+                }
+            }
+        }
+    }
+}
+`;
+
+export const getPost = gql`
+query GetPost($id: Int) {
+    post(id: $id) {
+        id
+        title
+        body
+        author {
+            id
+            name
+        }
+        comments {
+            totalCount
+            nodes {
+                id
+                body
+                author {
+                    id
+                    name
                 }
             }
         }

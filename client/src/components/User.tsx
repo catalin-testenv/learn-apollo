@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     BrowserRouter as Router,
     Switch,
@@ -7,30 +7,59 @@ import {
     Link,
     useParams
 } from "react-router-dom";
-import { useGetUserQuery } from '../graphql';
+import { useGetUserQuery, useUserUpdateMutation } from '../graphql';
 
 
 const User = () => {
+
     const params = useParams<{ id: string }>();
     const { id } = params;
-    const { data, loading, error } = useGetUserQuery({
+    const { data: userData, loading: userLoading, error: userError } = useGetUserQuery({
         variables: { id: +id },
     });
 
+    const [firstName, setFirstName] = useState(userData?.user?.firstName || '');
+    const [lastName, setLastName] = useState(userData?.user?.lastName || '');
+
+    useEffect(() => {
+        if (!userLoading) {
+            setFirstName(userData?.user?.firstName || '');
+            setLastName(userData?.user?.lastName || '');
+        }
+    }, [userLoading]);
+
+     const [userUpdateMutation, { loading: userUpdateLoading }] = useUserUpdateMutation();
+
+     const updateUser = () => {
+         userUpdateMutation({
+             variables: {
+                 id: +id, // value for 'id'
+                 fields: { firstName, lastName } // value for 'fields'
+             },
+         });
+     }
+
+     const userUpdateForm = <div>
+         <input disabled={userUpdateLoading} value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
+         <input disabled={userUpdateLoading} value={lastName} onChange={(e) => setLastName(e.target.value)}/>
+         <button disabled={userUpdateLoading} onClick={updateUser}>Submit</button>
+     </div>
+
     const toRender = <div>
-        <p>User: <b>{data?.user?.name}</b></p>
-        {data?.user?.posts?.nodes && <div>
-            <p>Posts ({ data?.user?.posts.totalCount }): </p>
+        {userUpdateForm}
+        <p>User: <b>{userData?.user?.firstName}</b> <b>{userData?.user?.lastName}</b></p>
+        {userData?.user?.posts?.nodes && <div>
+            <p>Posts ({ userData?.user?.posts.totalCount }): </p>
             <ul>
-                {data.user.posts.nodes.map((post) =>
+                {userData.user.posts.nodes.map((post) =>
                     <li key={post?.id}><Link to={`/posts/${post?.id}`}>{post?.title}</Link></li>
                 )}
             </ul>
         </div>}
-        {data?.user?.comments?.nodes && <div>
-            <p>Comments ({ data?.user?.comments?.totalCount }): </p>
+        {userData?.user?.comments?.nodes && <div>
+            <p>Comments ({ userData?.user?.comments?.totalCount }): </p>
             <ul>
-                {data.user.comments.nodes.map((comment) =>
+                {userData.user.comments.nodes.map((comment) =>
                     <li key={comment?.id}><Link to={`/comments/${comment?.id}`}>{comment?.id} for {comment?.post?.title}</Link></li>
                 )}
             </ul>
@@ -39,7 +68,7 @@ const User = () => {
     </div>;
 
     return (
-        loading ? <span>loading</span> : error ? <span>error</span> :
+        userLoading ? <span>loading</span> : userError ? <span>error</span> :
             <div>
                 <ul>
                     {toRender}

@@ -3,6 +3,8 @@ type Context = {
     knex: any;
 };
 
+const wait = (delay: number) => new Promise((res) => setTimeout(res, delay));
+
 // ==================== POST =================================
 
 type PostArguments = {
@@ -63,6 +65,16 @@ type UserArguments = {
     id: number;
 };
 
+type UserUpdateArguments = {
+    id: number;
+    fields: {
+        firstName?: string;
+        lastName?: string;
+        age?: number;
+        email?: string;
+    }
+};
+
 const selectUser = ['id', 'firstName', 'lastName', 'age', 'email'];
 
 async function getUser(
@@ -70,10 +82,24 @@ async function getUser(
     { id }: UserArguments,
     { knex }: Context
 ): Promise<User | undefined> {
+    await wait(1000);
     const users = await knex('users')
         .where('id', id)
         .select(...selectUser);
     return users[0];
+}
+
+async function updateUser(
+    _: any,
+    { id, fields }: UserUpdateArguments,
+    { knex }: Context
+): Promise<User | undefined> {
+    await wait(1000);
+    const updated =  await knex('users')
+        .where('id', '=', id)
+        .update({ ...fields });
+    // console.log('updateUser', updated);
+    return await getUser(null, { id }, { knex });
 }
 
 async function getUsers(
@@ -196,6 +222,10 @@ const resolvers = {
         comments: getComments,
         comment: getComment
     },
+
+    Mutation: {
+        updateUser
+    }
 };
 
 export default resolvers;
