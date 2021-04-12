@@ -37,6 +37,7 @@ export type User = {
   comments?: Maybe<Comments>;
   email?: Maybe<Scalars['String']>;
   firstName: Scalars['String'];
+  hobby?: Maybe<Scalars['String']>;
   iName: Scalars['String'];
   id: Scalars['ID'];
   lastName: Scalars['String'];
@@ -249,7 +250,7 @@ export type GetUsersQuery = (
     & Pick<Users, 'totalCount'>
     & { nodes?: Maybe<Array<Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'firstName' | 'lastName' | 'name' | 'iName'>
+      & Pick<User, 'id' | 'firstName' | 'lastName' | 'name' | 'iName' | 'hobby'>
       & { posts?: Maybe<(
         { __typename?: 'Posts' }
         & Pick<Posts, 'totalCount'>
@@ -278,7 +279,7 @@ export type GetUserQuery = (
   { __typename?: 'Query' }
   & { user?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'firstName' | 'lastName' | 'name'>
+    & Pick<User, 'id' | 'firstName' | 'lastName' | 'name' | 'hobby'>
     & { posts?: Maybe<(
       { __typename?: 'Posts' }
       & Pick<Posts, 'totalCount'>
@@ -311,7 +312,7 @@ export type UserUpdateMutation = (
   { __typename?: 'Mutation' }
   & { updateUser?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'firstName' | 'lastName' | 'name'>
+    & Pick<User, 'id' | 'firstName' | 'lastName' | 'name' | 'hobby'>
   )> }
 );
 
@@ -324,7 +325,7 @@ export type AddUserMutation = (
   { __typename?: 'Mutation' }
   & { addUser?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'firstName' | 'lastName' | 'name'>
+    & Pick<User, 'id' | 'firstName' | 'lastName' | 'name' | 'hobby'>
   )> }
 );
 
@@ -547,6 +548,7 @@ export const GetUsersDocument = gql`
       lastName
       name
       iName @client
+      hobby @client
       posts {
         totalCount
         nodes {
@@ -597,6 +599,7 @@ export const GetUserDocument = gql`
     firstName
     lastName
     name
+    hobby @client
     posts {
       totalCount
       nodes {
@@ -652,6 +655,7 @@ export const UserUpdateDocument = gql`
     firstName
     lastName
     name
+    hobby @client
   }
 }
     `;
@@ -688,6 +692,7 @@ export const AddUserDocument = gql`
     firstName
     lastName
     name
+    hobby @client
   }
 }
     `;

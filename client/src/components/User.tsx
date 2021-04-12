@@ -8,6 +8,7 @@ import {
     useParams
 } from "react-router-dom";
 import { useGetUserQuery, useUserUpdateMutation } from '../graphql';
+import { hobby } from "../index";
 
 
 const User = () => {
@@ -42,12 +43,13 @@ const User = () => {
      const userUpdateForm = <div>
          <input disabled={userUpdateLoading} value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
          <input disabled={userUpdateLoading} value={lastName} onChange={(e) => setLastName(e.target.value)}/>
+         <input disabled={userUpdateLoading} value={userData?.user?.hobby || ''} onChange={(e) => hobby({...hobby(), [id]: e.target.value})}/>
          <button disabled={userUpdateLoading} onClick={updateUser}>Submit</button>
      </div>
 
     const toRender = <div>
         {userUpdateForm}
-        <p>User: <b>{userData?.user?.firstName}</b> <b>{userData?.user?.lastName}</b></p>
+        <p>User: <b>{userData?.user?.firstName}</b> <b>{userData?.user?.lastName}</b> ({ userData?.user?.hobby })</p>
         {userData?.user?.posts?.nodes && <div>
             <p>Posts ({ userData?.user?.posts.totalCount }): </p>
             <ul>

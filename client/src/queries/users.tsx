@@ -9,6 +9,7 @@ query GetUsers {
             lastName
             name
             iName @client
+            hobby @client
             posts {
                 totalCount
                 nodes {
@@ -36,6 +37,7 @@ query GetUser($id: Int) {
     firstName
     lastName
     name
+      hobby @client
     posts {
         totalCount
         nodes {
@@ -66,6 +68,7 @@ mutation UserUpdate($id: Int, $fields: UserUpdateFieldsInput) {
     firstName
     lastName
     name
+      hobby @client
   }
 }
 `;
@@ -77,6 +80,7 @@ mutation AddUser($fields: UserUpdateFieldsInput) {
     firstName
     lastName
     name
+      hobby @client
   }
 }
 `;

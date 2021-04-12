@@ -1,10 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import {
-  ApolloClient,
-  ApolloProvider,
-  HttpLink,
-  InMemoryCache,
+    ApolloClient,
+    ApolloProvider,
+    HttpLink,
+    InMemoryCache,
+    makeVar,
 } from "@apollo/client";
 import App from "./App";
 
@@ -24,11 +25,23 @@ const cache = new InMemoryCache({
                 // },
                 iName(value, options, ...rest) {
                     return '-' + options.readField('lastName') + options.readField('firstName') + '-';
+                },
+                hobby: {
+                    read: (_, options) => {
+                        const _hobby = hobby();
+                        const currentValue = _hobby[options.readField('id') as string];
+                        return currentValue === undefined ? 'no hobby' : currentValue;
+                    }
                 }
             },
         },
     },
 });
+
+type hobbyType = {
+    [key: string]: string
+}
+export const hobby = makeVar({} as hobbyType);
 
 // @ts-ignore
 window.cache = cache;

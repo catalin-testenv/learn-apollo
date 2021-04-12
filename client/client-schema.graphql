@@ -1,3 +1,4 @@
 extend type User {
-  iName: String!
+    iName: String!
+    hobby: String
 }
