@@ -75,6 +75,15 @@ type UserUpdateArguments = {
     }
 };
 
+type UserInsertArguments = {
+    fields: {
+        firstName: string;
+        lastName: string;
+        age: number;
+        email?: string;
+    }
+};
+
 const selectUser = ['id', 'firstName', 'lastName', 'age', 'email'];
 
 async function getUser(
@@ -102,6 +111,22 @@ async function updateUser(
     return await getUser(null, { id }, { knex });
 }
 
+async function addUser(
+    _: any,
+    { fields }: UserInsertArguments,
+    { knex }: Context
+): Promise<User | undefined> {
+    await wait(1000);
+    const userId = await knex('users').insert([
+        fields,
+    ]);
+    const id = userId[0];
+    return {
+        id,
+        ...fields
+    };
+}
+
 async function getUsers(
     _: any,
     {}: any,
@@ -109,6 +134,7 @@ async function getUsers(
 ): Promise<Users> {
     const users = await knex('users')
         .select(...selectUser);
+    await wait(2000);
     return {
         totalCount: users.length,
         nodes: users
@@ -224,7 +250,8 @@ const resolvers = {
     },
 
     Mutation: {
-        updateUser
+        updateUser,
+        addUser
     }
 };
 

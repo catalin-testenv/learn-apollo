@@ -33,14 +33,15 @@ export type Posts = {
 
 export type User = {
   __typename?: 'User';
-  id: Scalars['ID'];
+  age?: Maybe<Scalars['Float']>;
+  comments?: Maybe<Comments>;
+  email?: Maybe<Scalars['String']>;
   firstName: Scalars['String'];
+  iName: Scalars['String'];
+  id: Scalars['ID'];
   lastName: Scalars['String'];
   name: Scalars['String'];
-  age?: Maybe<Scalars['Float']>;
-  email?: Maybe<Scalars['String']>;
   posts?: Maybe<Posts>;
-  comments?: Maybe<Comments>;
 };
 
 export type UserUpdateFieldsInput = {
@@ -98,6 +99,7 @@ export type QueryCommentArgs = {
 export type Mutation = {
   __typename?: 'Mutation';
   updateUser?: Maybe<User>;
+  addUser?: Maybe<User>;
 };
 
 
@@ -106,11 +108,36 @@ export type MutationUpdateUserArgs = {
   fields?: Maybe<UserUpdateFieldsInput>;
 };
 
+
+export type MutationAddUserArgs = {
+  fields?: Maybe<UserUpdateFieldsInput>;
+};
+
 export enum CacheControlScope {
   Public = 'PUBLIC',
   Private = 'PRIVATE'
 }
 
+
+export type NewUserFragment = (
+  { __typename?: 'User' }
+  & Pick<User, 'id' | 'firstName' | 'lastName' | 'age'>
+  & { posts?: Maybe<(
+    { __typename?: 'Posts' }
+    & Pick<Posts, 'totalCount'>
+    & { nodes?: Maybe<Array<Maybe<(
+      { __typename?: 'Post' }
+      & Pick<Post, 'id' | 'title'>
+    )>>> }
+  )>, comments?: Maybe<(
+    { __typename?: 'Comments' }
+    & Pick<Comments, 'totalCount'>
+    & { nodes?: Maybe<Array<Maybe<(
+      { __typename?: 'Comment' }
+      & Pick<Comment, 'id' | 'body'>
+    )>>> }
+  )> }
+);
 
 export type GetCommentsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -222,7 +249,7 @@ export type GetUsersQuery = (
     & Pick<Users, 'totalCount'>
     & { nodes?: Maybe<Array<Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'firstName' | 'lastName' | 'name'>
+      & Pick<User, 'id' | 'firstName' | 'lastName' | 'name' | 'iName'>
       & { posts?: Maybe<(
         { __typename?: 'Posts' }
         & Pick<Posts, 'totalCount'>
@@ -288,7 +315,41 @@ export type UserUpdateMutation = (
   )> }
 );
 
+export type AddUserMutationVariables = Exact<{
+  fields?: Maybe<UserUpdateFieldsInput>;
+}>;
 
+
+export type AddUserMutation = (
+  { __typename?: 'Mutation' }
+  & { addUser?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'firstName' | 'lastName' | 'name'>
+  )> }
+);
+
+export const NewUserFragmentDoc = gql`
+    fragment NewUser on User {
+  id
+  firstName
+  lastName
+  age
+  posts {
+    totalCount
+    nodes {
+      id
+      title
+    }
+  }
+  comments {
+    totalCount
+    nodes {
+      id
+      body
+    }
+  }
+}
+    `;
 export const GetCommentsDocument = gql`
     query GetComments {
   comments {
@@ -485,6 +546,7 @@ export const GetUsersDocument = gql`
       firstName
       lastName
       name
+      iName @client
       posts {
         totalCount
         nodes {
@@ -619,3 +681,38 @@ export function useUserUpdateMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UserUpdateMutationHookResult = ReturnType<typeof useUserUpdateMutation>;
 export type UserUpdateMutationResult = Apollo.MutationResult<UserUpdateMutation>;
 export type UserUpdateMutationOptions = Apollo.BaseMutationOptions<UserUpdateMutation, UserUpdateMutationVariables>;
+export const AddUserDocument = gql`
+    mutation AddUser($fields: UserUpdateFieldsInput) {
+  addUser(fields: $fields) {
+    id
+    firstName
+    lastName
+    name
+  }
+}
+    `;
+export type AddUserMutationFn = Apollo.MutationFunction<AddUserMutation, AddUserMutationVariables>;
+
+/**
+ * __useAddUserMutation__
+ *
+ * To run a mutation, you first call `useAddUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addUserMutation, { data, loading, error }] = useAddUserMutation({
+ *   variables: {
+ *      fields: // value for 'fields'
+ *   },
+ * });
+ */
+export function useAddUserMutation(baseOptions?: Apollo.MutationHookOptions<AddUserMutation, AddUserMutationVariables>) {
+        return Apollo.useMutation<AddUserMutation, AddUserMutationVariables>(AddUserDocument, baseOptions);
+      }
+export type AddUserMutationHookResult = ReturnType<typeof useAddUserMutation>;
+export type AddUserMutationResult = Apollo.MutationResult<AddUserMutation>;
+export type AddUserMutationOptions = Apollo.BaseMutationOptions<AddUserMutation, AddUserMutationVariables>;

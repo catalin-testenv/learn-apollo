@@ -8,6 +8,7 @@ query GetUsers {
             firstName
             lastName
             name
+            iName @client
             posts {
                 totalCount
                 nodes {
@@ -61,6 +62,17 @@ query GetUser($id: Int) {
 export const updateUser =  gql`
 mutation UserUpdate($id: Int, $fields: UserUpdateFieldsInput) {
   updateUser(id: $id, fields: $fields) {
+    id
+    firstName
+    lastName
+    name
+  }
+}
+`;
+
+export const addUser = gql`
+mutation AddUser($fields: UserUpdateFieldsInput) {
+  addUser(fields: $fields) {
     id
     firstName
     lastName

@@ -60,5 +60,6 @@ export default gql`
   
   type Mutation {
     updateUser(id: Int, fields: UserUpdateFieldsInput): User
+    addUser(fields: UserUpdateFieldsInput): User
   }
 `;
