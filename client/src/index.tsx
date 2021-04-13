@@ -8,6 +8,7 @@ import {
     makeVar,
 } from "@apollo/client";
 import App from "./App";
+import './index.css';
 
 const token = process.env.REACT_APP_AAA || '';
 
