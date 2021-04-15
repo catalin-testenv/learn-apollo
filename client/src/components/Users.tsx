@@ -87,10 +87,10 @@ const Users = () => {
         });
     }
 
-    const toRender = <div>Users ({data?.users?.totalCount}): <ul>
+    const toRender = <div>Users ({data?.users?.totalCount}): <ul className="bg-gray-300">
         {data?.users?.nodes?.map(
             (user) =>
-                <li key={user?.id}>
+                <li className="" key={user?.id}>
                     <Link to={`/users/${user?.id}`}>{user?.name}  {user?.iName} ({ user?.hobby })</Link>
                     {user?.posts?.nodes && <ul>
                         {user.posts.nodes.map((post) => <li key={post?.id}>
